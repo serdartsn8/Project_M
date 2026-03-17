@@ -1,0 +1,18 @@
+# Unreal Engine'in her açılışta yeniden oluşturduğu klasörler (ASLA YÜKLEME)
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# Rider ve Visual Studio dosyaları
+.idea/
+.vs/
+*.sln
+*.xcworkspace
+
+# Otomatik oluşturulan loglar
+*.log
+
+# Eğer Content içinde devasa test dosyaların varsa (İsteğe bağlı)
+# Content/Movies/
