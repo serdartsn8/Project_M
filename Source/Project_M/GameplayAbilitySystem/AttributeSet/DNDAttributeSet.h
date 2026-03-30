@@ -50,4 +50,27 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes|Combat")
 	FGameplayAttributeData ArmorClass;
 	ATTRIBUTE_ACCESSORS(UDNDAttributeSet, ArmorClass)
+	
+	// Replication
+	UFUNCTION()
+	virtual void OnRep_Strength(const FGameplayAttributeData& OldStrength);
+	
+	UFUNCTION()
+	virtual void OnRep_Dexterity(const FGameplayAttributeData& OldDexterity);
+	
+	UFUNCTION()
+	virtual void OnRep_Constitution(const FGameplayAttributeData& OldConstitution);
+	
+	UFUNCTION()
+	virtual void OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence);
+	
+	UFUNCTION()
+	virtual void OnRep_Wisdom(const FGameplayAttributeData& OldWisdom);
+	
+	UFUNCTION()
+	virtual void OnRep_Charisma(const FGameplayAttributeData& OldCharisma);
+	
+	UFUNCTION()
+	virtual void OnRep_ArmorClass(const FGameplayAttributeData& OldArmorClass);
+	
 };
