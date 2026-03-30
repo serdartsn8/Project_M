@@ -31,6 +31,15 @@ public:
 	// Karakter yaratma ekraninda oyuncunun secebilecegi "Expertise" sayisi
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class Info")
 	int32 AllowedExpertiseCount;
+	
+	// Karakterin secebilecegi yetenek havuzu
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Class Info")
+	FGameplayTagContainer ChoosableSkillPool;
+	
+	// Havuzdan kac tane yetenek secme hakki var
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class Info")
+	int32 AllowedProficiencyCount;
+	
 };
 
 UCLASS()
@@ -72,7 +81,23 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DND|Character Setup")
 	int32 AvailableExpertisePoints;
 	
+	// Oyuncunun secebilecegi Proficiency sayisi
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DND|Character Setup")
+	int32 AvailableProficiencyPoints;
+	
+	// UI'in gosterecegi secilebilir yetenek havuzu
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DND|Character Setup")
+	FGameplayTagContainer AllowedSkillPool;
+	
 	// Verileri ASC'ye yazacak fonksiyon
 	void InitializeCharacterClass();
+	
+	// UI'dan cagrilacak Expertise secme fonksiyonu
+	UFUNCTION(BlueprintCallable, Category = "DND|Class Setup")
+	bool AssignExpertise(FGameplayTag TargetSkillTag);
+	
+	// UI'dan cagrilacak Proficiency secme fonksiyonu
+	UFUNCTION(BlueprintCallable, Category = "DND|Class Setup")
+	bool AssignProficiency(FGameplayTag TargetSkillTag);
 
 };

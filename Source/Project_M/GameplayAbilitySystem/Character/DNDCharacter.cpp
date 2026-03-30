@@ -81,9 +81,93 @@ void ADNDCharacter::InitializeCharacterClass()
 		// Expertise hakkini kaydet
 		AvailableExpertisePoints = ClassInfo->AllowedExpertiseCount;
 		
+		AvailableProficiencyPoints = ClassInfo->AllowedProficiencyCount;
+		AllowedSkillPool = ClassInfo->ChoosableSkillPool;
+		
 		UE_LOG(LogTemp, Warning,TEXT("Karakter sinifi basariyla yuklendi! Verilen Tag Sayisi: %d"), ClassInfo->StartingProficiencies.Num());
 		
 	}
 	
 }
 
+bool ADNDCharacter::AssignExpertise(FGameplayTag TargetSkillTag)
+{
+	// Karakterin Expertise hakkı var mi?
+	if (AvailableExpertisePoints <= 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Harcayacak Expertise puaniniz kalmadi!"));
+		return false;
+	}
+	
+	FString SkillName = TargetSkillTag.ToString();
+	FGameplayTag ProficiencyTag = FGameplayTag::RequestGameplayTag(FName(*(SkillName + TEXT(".Proficiency"))), false);
+	FGameplayTag ExpertiseTag = FGameplayTag::RequestGameplayTag((FName(*(SkillName + TEXT(".Expertise")))), false);
+	
+	// ASC var mi ve Tag'ler gecerli mi?
+	if (!AbilitySystemComponent || !ProficiencyTag.IsValid() || !ExpertiseTag.IsValid())
+	{
+		return false;
+	}
+	
+	// Karakterin zaten Expertise'i var mi?
+	if (AbilitySystemComponent->HasMatchingGameplayTag(ExpertiseTag))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Bu yetenekte zaten Expertise'niz var!"));
+		return false;
+	}
+	
+	// Karakterin Proficiency'si var mi? Expertise eklemek icin proficiency on sart
+	if (!AbilitySystemComponent->HasMatchingGameplayTag(ProficiencyTag))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Kural geregi, Expertise eklemek icin once Proficiency'niz olmalidir! %s yeteneginde Proficiency'niz yok."), *SkillName);
+		return false;
+	}
+	
+	// Expertise'i ekle ve hakkı azalt
+	AbilitySystemComponent->AddLooseGameplayTag(ExpertiseTag);
+	AvailableExpertisePoints--;
+	
+	UE_LOG(LogTemp, Warning, TEXT("BASARILI! %s yetenegi icin uzmanlik eklendi. Kalan puan %d"), *SkillName, AvailableExpertisePoints);
+	return true;
+	
+}
+
+bool ADNDCharacter::AssignProficiency(FGameplayTag TargetSkillTag)
+{
+	if (AvailableProficiencyPoints <= 0)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("Harcayacak Proficiency bonusu kalmadi!"))
+		return false;
+	}
+	
+	// Secilmek istenen skill bu classin havuzunda var mi?
+	if (!AllowedSkillPool.HasTagExact(TargetSkillTag))
+	{
+		UE_LOG(LogTemp,Warning,TEXT("Kural Ihlali: %s yetenegi bu karakter sinifinin secilebilir havuzunda yok!"), *TargetSkillTag.ToString());
+		return false;
+	}
+	
+	// Tag'i olustur
+	FString SkillName = TargetSkillTag.ToString();
+	FGameplayTag ProficiencyTag = FGameplayTag::RequestGameplayTag(FName(*(SkillName + TEXT(".Proficiency"))), false);
+	
+	if (!AbilitySystemComponent || !ProficiencyTag.IsValid())
+	{
+		return false;
+	}
+	
+	// Zaten proficiency var mi?
+	if (AbilitySystemComponent->HasMatchingGameplayTag(ProficiencyTag))
+	{
+		UE_LOG(LogTemp,Warning,TEXT("Bub yetenekte zaten Proficiency'niz var!"));
+		return false;
+	}
+	
+	// Proficiency'i ekle ve hakkı azalt
+	AbilitySystemComponent->AddLooseGameplayTag(ProficiencyTag);
+	AvailableProficiencyPoints--;
+	
+	UE_LOG(LogTemp,Warning,TEXT("BASARILI! %s yetenegi icin proficiency eklendi. Kalan puan %d"), *SkillName, AvailableProficiencyPoints);
+	return true;
+	
+}
