@@ -8,6 +8,7 @@
 #include "GameplayEffectTypes.h"
 #include "Engine/DataTable.h"
 #include "GameplayTagContainer.h"
+#include "Project_M/GameplayAbilitySystem/Components/InventoryComponent/DndInventoryComponent.h"
 #include "DNDCharacter.generated.h"
 
 USTRUCT(BlueprintType)
@@ -99,5 +100,9 @@ public:
 	// UI'dan cagrilacak Proficiency secme fonksiyonu
 	UFUNCTION(BlueprintCallable, Category = "DND|Class Setup")
 	bool AssignProficiency(FGameplayTag TargetSkillTag);
+	
+	// Envanter Componenti
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category= "DND|Components")
+	class UDndInventoryComponent* DndInventoryComponent;
 
 };
