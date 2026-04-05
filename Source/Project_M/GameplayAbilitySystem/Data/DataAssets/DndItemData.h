@@ -18,6 +18,16 @@ enum class EItemType : uint8
 	Misc
 };
 
+UENUM(BlueprintType)
+enum class EEquipmentSlot : uint8
+{
+	None,
+	MainHand,
+	OffHand,
+	Armor,
+	Ring
+};
+
 UCLASS()
 class PROJECT_M_API UDndItemData : public UPrimaryDataAsset
 {
@@ -52,6 +62,9 @@ public:
 	// Item'in Tagleri
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Item | GAS")
 	FGameplayTagContainer ItemTags;
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category= "Item | Equipment")
+	EEquipmentSlot EquipmentSlot = EEquipmentSlot::None;
 	
 	
 };

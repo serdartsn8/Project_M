@@ -5,10 +5,29 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Project_M/GameplayAbilitySystem/Data/DataAssets/DndItemData.h"
+#include "GameplayAbilitySpecHandle.h"
+#include "ActiveGameplayEffectHandle.h"
 #include "DndInventoryComponent.generated.h"
 
 // Delegate
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdated);
+
+USTRUCT(BlueprintType)
+struct FEquippedItemData
+{
+	GENERATED_BODY()
+
+	// Kusanilan Esya
+	UPROPERTY()
+	UDndItemData* Item = nullptr;
+	
+	// GAS'in verdigi ability handle'lari (Eger esya yetenek veriyorsa)
+	TArray<FGameplayAbilitySpecHandle> GrantedAbilityHandles;
+	
+	// GAS'in verdigi effect handle'lari (Eger esya effect veriyorsa)
+	TArray<FActiveGameplayEffectHandle> GrantedEffectHandles;
+	
+};
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECT_M_API UDndInventoryComponent : public UActorComponent
@@ -41,6 +60,18 @@ public:
 	// Envanterde belirli bir item var mi?
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	bool HasItem(UDndItemData* ItemToCheck) const;
+	
+	// Ekipman Slotlari ve Kusanilan Esya Bilgisi
+	UPROPERTY(VisibleAnywhere, Category= "Inventory|Equipment")
+	TMap<EEquipmentSlot, FEquippedItemData> EquippedItems;
+	
+	// Esyayi kusan ve yetenekleri/statlari karaktere ver
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Equipment")
+	bool EquipItem(UDndItemData* ItemToEquip);
+	
+	// Esyayi kuşanmayı kaldır ve verilen yetenekleri/statları geri al
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Equipment")
+	bool UnequipItem(EEquipmentSlot SlotToUnequip);
 	
 protected:
 	virtual void BeginPlay() override;
