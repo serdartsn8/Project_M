@@ -175,3 +175,52 @@ bool ADNDCharacter::AssignProficiency(FGameplayTag TargetSkillTag)
 	return true;
 	
 }
+
+void ADNDCharacter::TraceForInteractables()
+{
+	FVector StartLocation = GetPawnViewLocation();
+	FVector EndLocation = StartLocation + (GetViewRotation().Vector() * InteractionRange);
+	
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult,StartLocation,EndLocation, ECC_Visibility, QueryParams);
+	
+	if (bHit && HitResult.GetActor())
+	{
+		AActor* HitActor = HitResult.GetActor();
+		
+		if (HitActor->Implements<UDndInteractableInterface>())
+		{
+			if (FocusedInteractableActor != HitActor)
+			{
+				FocusedInteractableActor = HitActor;
+				
+				// UI icin delegate yapilacak
+				UE_LOG(LogTemp, Warning, TEXT("Etkilesimli bir objeye bakiyorsun: %s"), *HitActor->GetName());
+			}
+			return;
+		}
+	}
+	
+	if (FocusedInteractableActor)
+	{
+		FocusedInteractableActor = nullptr;
+		// UI icin delegate yapilacak
+		UE_LOG(LogTemp,Warning,TEXT("Objeden gozunu cektin!"));
+	}
+	
+	
+}
+
+void ADNDCharacter::InteractKeyPressed()
+{
+	if (FocusedInteractableActor)
+	{
+		IDndInteractableInterface::Execute_Interact(FocusedInteractableActor,this);
+	}else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Etkilesime girilecek bir sey yok."));
+	}
+}

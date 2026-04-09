@@ -22,9 +22,11 @@ struct FEquippedItemData
 	UDndItemData* Item = nullptr;
 	
 	// GAS'in verdigi ability handle'lari (Eger esya yetenek veriyorsa)
+	UPROPERTY()
 	TArray<FGameplayAbilitySpecHandle> GrantedAbilityHandles;
 	
 	// GAS'in verdigi effect handle'lari (Eger esya effect veriyorsa)
+	UPROPERTY()
 	TArray<FActiveGameplayEffectHandle> GrantedEffectHandles;
 	
 };

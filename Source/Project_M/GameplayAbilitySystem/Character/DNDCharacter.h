@@ -9,6 +9,7 @@
 #include "Engine/DataTable.h"
 #include "GameplayTagContainer.h"
 #include "Project_M/GameplayAbilitySystem/Components/InventoryComponent/DndInventoryComponent.h"
+#include "Project_M/GameplayAbilitySystem/Interfaces/InteractableInterface/DndInteractableInterface.h"
 #include "DNDCharacter.generated.h"
 
 USTRUCT(BlueprintType)
@@ -31,7 +32,7 @@ public:
 	
 	// Karakter yaratma ekraninda oyuncunun secebilecegi "Expertise" sayisi
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class Info")
-	int32 AllowedExpertiseCount;
+	int32 AllowedExpertiseCount = 0;
 	
 	// Karakterin secebilecegi yetenek havuzu
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Class Info")
@@ -39,7 +40,8 @@ public:
 	
 	// Havuzdan kac tane yetenek secme hakki var
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class Info")
-	int32 AllowedProficiencyCount;
+	int32 AllowedProficiencyCount = 0;
+	
 	
 };
 
@@ -53,6 +55,22 @@ public:
 	ADNDCharacter();
 	
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	
+	// Interaction uzunlugu
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category= "DND|Interaction")
+	float InteractionRange = 500.f;
+	
+	// Karakterin baktigi etkilesimli obje
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category= "DND|Interaction")
+	AActor* FocusedInteractableActor;
+	
+	// Trace fonksiyonu
+	UFUNCTION(BlueprintCallable, Category = "DND|Interaction")
+	void TraceForInteractables();
+	
+	// Etkilesim tusuna basildiginda cagrilacak fonksiyon
+	UFUNCTION(BlueprintCallable,Category= "DND|Interaction")
+	void InteractKeyPressed();
 
 protected:
 	// Called when the game starts or when spawned

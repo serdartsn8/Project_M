@@ -89,6 +89,14 @@ bool UDndInventoryComponent::EquipItem(UDndItemData* ItemToEquip)
 	{
 		if (EffectClass)
 		{
+			
+			UGameplayEffect* EffectCDO = EffectClass->GetDefaultObject<UGameplayEffect>();
+			if (EffectCDO->DurationPolicy == EGameplayEffectDurationType::Instant)
+			{
+				// Ekrana ve Log'a kırmızı bir hata basıp onu uyaralım!
+				UE_LOG(LogTemp, Error, TEXT("DIKKAT: %s esyasina Instant (Kalici) bir efekt baglanmis! Ekipman efektleri her zaman INFINITE olmalidir!"), *ItemToEquip->ItemName.ToString());
+			}
+			
 			FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
 			EffectContext.AddInstigator(GetOwner(), GetOwner());
 			
@@ -97,6 +105,7 @@ bool UDndInventoryComponent::EquipItem(UDndItemData* ItemToEquip)
 			{
 				// Effecti uygula ve handle'ini kaydet
 				FActiveGameplayEffectHandle ActiveHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+				NewEquippedItemData.GrantedEffectHandles.Add(ActiveHandle);
 			}
 		}
 	}
@@ -135,6 +144,7 @@ bool UDndInventoryComponent::UnequipItem(EEquipmentSlot SlotToUnequip)
 	FEquippedItemData& DataToRemove = EquippedItems[SlotToUnequip];
 	
 	// Verilen effectleri kaldir
+	/*
 	for (FActiveGameplayEffectHandle EffectHandle : DataToRemove.GrantedEffectHandles)
 	{
 		if (EffectHandle.IsValid())
@@ -142,6 +152,35 @@ bool UDndInventoryComponent::UnequipItem(EEquipmentSlot SlotToUnequip)
 			ASC->RemoveActiveGameplayEffect(EffectHandle);
 		}
 	}
+	*/
+	
+	// 2. Efektleri Kaldır (Statları geri al) - DEBUG VERSİYONU
+	int32 EfektSayisi = DataToRemove.GrantedEffectHandles.Num();
+	UE_LOG(LogTemp, Warning, TEXT("---- UNEQUIP DEBUG BASLIYOR ----"));
+	UE_LOG(LogTemp, Warning, TEXT("Bu esyaya ait silinmesi gereken Efekt Makbuzu Sayisi: %d"), EfektSayisi);
+
+	for (FActiveGameplayEffectHandle EffectHandle : DataToRemove.GrantedEffectHandles)
+	{
+		if (EffectHandle.IsValid())
+		{
+			// Efekti silmeyi dene ve sonucu bir bool değişkene al
+			bool bWasRemoved = ASC->RemoveActiveGameplayEffect(EffectHandle);
+            
+			if (bWasRemoved)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("BASARILI: Makbuz GAS sistemine verildi ve efekt silindi!"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("KRITIK HATA: Makbuz gecerli ama GAS bu efekti silmeyi REDDETTI! (Authority veya baska bir sorun olabilir)"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("HATA: Elimizdeki Makbuz (Handle) gecersiz (Invalid) olmus. Efekt zaten ölmüş olabilir."));
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("---- UNEQUIP DEBUG BITTI ----"));
 	
 	// Verilen yetenekleri kaldir
 	for (FGameplayAbilitySpecHandle AbilityHandle : DataToRemove.GrantedAbilityHandles)
@@ -154,6 +193,7 @@ bool UDndInventoryComponent::UnequipItem(EEquipmentSlot SlotToUnequip)
 	
 	// Esyayi MAP'ten kaldir
 	FString ItemName = DataToRemove.Item ? DataToRemove.Item->ItemName.ToString() : TEXT("Esya");
+	EquippedItems.Remove(SlotToUnequip);
 	UE_LOG(LogTemp,Warning,TEXT("%s %s slotundan kaldirildi!"), *ItemName, *UEnum::GetValueAsString(SlotToUnequip));
 	return true;
 }
