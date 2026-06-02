@@ -30,4 +30,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "DND|Skill Check")
 	int32 DifficultyClass = 10; // Default DC 10
 	
+	// Zari attigimiz kisinin hafizada tutulmasi (sanidk, kapi vb.)
+	UPROPERTY()
+	AActor* InteractionTarget;
+	
 };

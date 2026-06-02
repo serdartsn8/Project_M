@@ -29,6 +29,8 @@ void ADNDCharacter::BeginPlay()
 	
 	InitializeCharacterClass();
 	
+	
+	
 }
 
 // Called every frame

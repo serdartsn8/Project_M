@@ -29,4 +29,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Interaction")
 	FText GetInteractText();
 	
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable, Category= "Interaction")
+	void OnInteractionSuccess();
+	
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable, Category= "Interaction")
+	void OnInteractionFailed();
+	
 };

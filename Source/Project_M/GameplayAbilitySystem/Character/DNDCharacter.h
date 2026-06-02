@@ -42,6 +42,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Class Info")
 	int32 AllowedProficiencyCount = 0;
 	
+	// Karaktere baslangicta verilecek yetenekler 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
+	TArray<TSubclassOf<class UGameplayAbility>> DefaultAbilities;
+	
 	
 };
 
